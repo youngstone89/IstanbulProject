@@ -10,12 +10,13 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine','karma-typescript'],
+    frameworks: ['jasmine','karma-typescript','commonjs'],
 
 
     // list of files / patterns to load in the browser
     files: [
-      { pattern: 'test/*.ts', watched: true }
+      { pattern: "src/**/*.+(js|ts)" },
+      { pattern: "test/**/*.+(js|ts)" }
     ],
 
 
@@ -27,14 +28,26 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test/*.ts': [ 'karma-typescript' ]
+      "src/**/*.+(js|ts)": ["karma-typescript","coverage","commonjs"],
+      "test/**/*.+(js|ts)": ["karma-typescript","commonjs"]
     },
-
+    // To get code coverage for both plain JavaScript modules and Typescript modules in a hybrid application, simply use allowJs in the Typescript compiler options and then pipe all .js and .ts files through karma-typescript:
+    karmaTypescriptConfig: {
+      compilerOptions: {
+        allowJs: true,
+        "module": "commonjs",
+        "target": "es5",
+        "sourceMap": true
+      },
+      bundlerOptions: {
+        transforms: [require("karma-typescript-es6-transform")()]
+      }
+    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress','karma-typescript'],
+    reporters: ['progress','coverage','karma-typescript'],
 
 
     // web server port
@@ -47,7 +60,7 @@ module.exports = function(config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_ERROR,
+    logLevel: config.LOG_INFO,
 
 
     // enable / disable watching file and executing tests whenever any file changes
